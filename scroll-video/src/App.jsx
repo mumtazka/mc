@@ -108,13 +108,13 @@ function App() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // GSAP ScrollTrigger animation
+    // GSAP ScrollTrigger animation - smoother with higher scrub value
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: containerRef.current,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 1, // Smooth scrubbing
+        scrub: 3, // Increased for smoother scrolling (was 1)
       }
     });
 
@@ -137,19 +137,17 @@ function App() {
 
   return (
     <div className="app">
-      {/* Loading Screen */}
+      {/* Mojang-Style Loading Screen */}
       {isLoading && (
         <div className="loading-screen">
-          <div className="loading-content">
-            <div className="loading-spinner"></div>
-            <h2 className="loading-title">Loading Experience</h2>
-            <div className="progress-bar-container">
-              <div
-                className="progress-bar"
-                style={{ width: `${loadingProgress}%` }}
-              ></div>
-            </div>
-            <p className="loading-percent">{loadingProgress}%</p>
+          <div className="loading-logo">
+            <img src="/assets/loading-bg.png" alt="Loading" className="loading-image" />
+          </div>
+          <div className="loading-bar-container">
+            <div
+              className="loading-bar"
+              style={{ width: `${loadingProgress}%` }}
+            ></div>
           </div>
         </div>
       )}
@@ -166,16 +164,8 @@ function App() {
           className="frame-canvas"
         />
 
-        {/* Scroll Height Spacer */}
+        {/* Scroll Height Spacer - Increased for slower/smoother scrolling */}
         <div className="scroll-spacer"></div>
-
-        {/* Scroll Indicator */}
-        <div className="scroll-indicator">
-          <div className="scroll-mouse">
-            <div className="scroll-wheel"></div>
-          </div>
-          <p>Scroll to play</p>
-        </div>
       </div>
     </div>
   );
