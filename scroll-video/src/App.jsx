@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import MojangLoader from './components/MojangLoader';
 import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -22,10 +23,18 @@ function App() {
   const [images, setImages] = useState([]);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [showMojangLoader, setShowMojangLoader] = useState(true);
   const frameIndexRef = useRef({ value: 0 });
 
-  // Preload all images
+  // Handle Mojang animation complete
+  const handleMojangComplete = () => {
+    setShowMojangLoader(false);
+  };
+
+  // Preload all images after Mojang animation completes
   useEffect(() => {
+    if (showMojangLoader) return;
+
     const loadedImages = [];
     let loadedCount = 0;
 
@@ -59,11 +68,11 @@ function App() {
     };
 
     preloadImages();
-  }, []);
+  }, [showMojangLoader]);
 
   // Setup GSAP ScrollTrigger after images are loaded
   useEffect(() => {
-    if (isLoading || images.length === 0) return;
+    if (isLoading || images.length === 0 || showMojangLoader) return;
 
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
@@ -133,21 +142,27 @@ function App() {
       window.removeEventListener('resize', resizeCanvas);
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [isLoading, images]);
+  }, [isLoading, images, showMojangLoader]);
+
+  // Show Mojang loader first
+  if (showMojangLoader) {
+    return <MojangLoader onComplete={handleMojangComplete} />;
+  }
 
   return (
     <div className="app">
-      {/* Mojang-Style Loading Screen */}
+      {/* Fullscreen Loading Screen for frame preloading */}
       {isLoading && (
         <div className="loading-screen">
-          <div className="loading-logo">
-            <img src="/assets/loading-bg.png" alt="Loading" className="loading-image" />
-          </div>
-          <div className="loading-bar-container">
-            <div
-              className="loading-bar"
-              style={{ width: `${loadingProgress}%` }}
-            ></div>
+          <div className="loading-content">
+            <div className="loading-text">Loading frames...</div>
+            <div className="loading-bar-container">
+              <div
+                className="loading-bar"
+                style={{ width: `${loadingProgress}%` }}
+              ></div>
+            </div>
+            <div className="loading-percentage">{loadingProgress}%</div>
           </div>
         </div>
       )}
