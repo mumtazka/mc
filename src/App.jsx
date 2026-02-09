@@ -34,17 +34,20 @@ function App() {
     setShowMojangLoader(false);
   };
 
-  // Preload all images immediately (while Mojang animation plays)
+  // Preload all images with chunking to avoid blocking main thread
   useEffect(() => {
     const loadedImages = [];
     let loadedCount = 0;
+    const CHUNK_SIZE = 50; // Process 50 images per tick
 
-    const preloadImages = () => {
-      for (let i = 1; i <= FRAME_COUNT; i++) {
+    const preloadChunk = (startIndex) => {
+      const endIndex = Math.min(startIndex + CHUNK_SIZE, FRAME_COUNT + 1);
+
+      for (let i = startIndex; i < endIndex; i++) {
         const img = new Image();
         img.src = getFramePath(i);
 
-        img.onload = () => {
+        const onLoadOrError = () => {
           loadedCount++;
           setLoadingProgress(Math.round((loadedCount / FRAME_COUNT) * 100));
 
@@ -54,21 +57,19 @@ function App() {
           }
         };
 
-        img.onerror = () => {
-          loadedCount++;
-          setLoadingProgress(Math.round((loadedCount / FRAME_COUNT) * 100));
-
-          if (loadedCount === FRAME_COUNT) {
-            setImages(loadedImages);
-            setIsFramesLoaded(true);
-          }
-        };
+        img.onload = onLoadOrError;
+        img.onerror = onLoadOrError;
 
         loadedImages[i - 1] = img;
       }
+
+      if (endIndex <= FRAME_COUNT) {
+        // Schedule next chunk to yield to main thread
+        setTimeout(() => preloadChunk(endIndex), 0);
+      }
     };
 
-    preloadImages();
+    preloadChunk(1);
   }, []);
 
   // Setup GSAP ScrollTrigger after images are loaded
