@@ -22,7 +22,7 @@ function App() {
   const containerRef = useRef(null);
   const [images, setImages] = useState([]);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isFramesLoaded, setIsFramesLoaded] = useState(false);
   const [showMojangLoader, setShowMojangLoader] = useState(true);
   const frameIndexRef = useRef({ value: 0 });
 
@@ -31,10 +31,8 @@ function App() {
     setShowMojangLoader(false);
   };
 
-  // Preload all images after Mojang animation completes
+  // Preload all images immediately (while Mojang animation plays)
   useEffect(() => {
-    if (showMojangLoader) return;
-
     const loadedImages = [];
     let loadedCount = 0;
 
@@ -49,7 +47,7 @@ function App() {
 
           if (loadedCount === FRAME_COUNT) {
             setImages(loadedImages);
-            setIsLoading(false);
+            setIsFramesLoaded(true);
           }
         };
 
@@ -59,7 +57,7 @@ function App() {
 
           if (loadedCount === FRAME_COUNT) {
             setImages(loadedImages);
-            setIsLoading(false);
+            setIsFramesLoaded(true);
           }
         };
 
@@ -68,11 +66,11 @@ function App() {
     };
 
     preloadImages();
-  }, [showMojangLoader]);
+  }, []);
 
   // Setup GSAP ScrollTrigger after images are loaded
   useEffect(() => {
-    if (isLoading || images.length === 0 || showMojangLoader) return;
+    if (!isFramesLoaded || images.length === 0 || showMojangLoader) return;
 
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
@@ -142,36 +140,19 @@ function App() {
       window.removeEventListener('resize', resizeCanvas);
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [isLoading, images, showMojangLoader]);
+  }, [isFramesLoaded, images, showMojangLoader]);
 
-  // Show Mojang loader first
+  // Show Mojang loader first (frames load in background)
   if (showMojangLoader) {
-    return <MojangLoader onComplete={handleMojangComplete} />;
+    return <MojangLoader onComplete={handleMojangComplete} isContentLoaded={isFramesLoaded} />;
   }
 
   return (
     <div className="app">
-      {/* Fullscreen Loading Screen for frame preloading */}
-      {isLoading && (
-        <div className="loading-screen">
-          <div className="loading-content">
-            <div className="loading-text">Loading frames...</div>
-            <div className="loading-bar-container">
-              <div
-                className="loading-bar"
-                style={{ width: `${loadingProgress}%` }}
-              ></div>
-            </div>
-            <div className="loading-percentage">{loadingProgress}%</div>
-          </div>
-        </div>
-      )}
-
       {/* Main Scroll Container */}
       <div
         ref={containerRef}
         className="scroll-container"
-        style={{ display: isLoading ? 'none' : 'block' }}
       >
         {/* Fixed Canvas for Frame Animation */}
         <canvas

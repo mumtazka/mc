@@ -1,24 +1,24 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 
-// Sprite sheet configuration (from Java source)
 const FRAMES = 12;           // 12 sprite sheet files
 const IMAGE_PER_FRAME = 4;   // 4 sub-frames per sheet (stacked vertically)
 const FRAMES_PER_FRAME = 2;  // Each sub-frame displays for 2 ticks
 const TOTAL_FRAMES = FRAMES * IMAGE_PER_FRAME * FRAMES_PER_FRAME; // 96 total animation ticks
 const ANIMATION_DURATION = 3000; // 3 seconds in ms
 const FADE_OUT_DURATION = 1000;  // 1 second fade out
+const BG_COLOR = '#ED1C24';     // Mojang red background
 
 // Sprite sheet dimensions
 const SHEET_WIDTH = 1024;
 const SHEET_HEIGHT = 1024;
 const SUB_FRAME_HEIGHT = 256;
 
-function MojangLoader({ onComplete }) {
+function MojangLoader({ onComplete, isContentLoaded = false }) {
     const canvasRef = useRef(null);
     const [sheets, setSheets] = useState([]);
     const [loadingProgress, setLoadingProgress] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [animationPhase, setAnimationPhase] = useState('loading'); // 'loading' | 'animating' | 'fadeout' | 'done'
+    const [animationPhase, setAnimationPhase] = useState('loading'); // 'loading' | 'animating' | 'waiting' | 'fadeout' | 'done'
     const animationRef = useRef(null);
     const startTimeRef = useRef(null);
     const fadeStartRef = useRef(null);
@@ -136,8 +136,8 @@ function MojangLoader({ onComplete }) {
 
             const elapsed = timestamp - startTimeRef.current;
 
-            // Clear canvas
-            ctx.fillStyle = '#0a0a0f';
+            // Clear canvas with red background
+            ctx.fillStyle = BG_COLOR;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (animationPhase === 'animating') {
@@ -148,6 +148,19 @@ function MojangLoader({ onComplete }) {
                 drawFrame(ctx, canvas, frameIndex);
 
                 if (progress >= 1) {
+                    // Animation complete - wait for content to load or start fadeout
+                    if (isContentLoaded) {
+                        setAnimationPhase('fadeout');
+                        fadeStartRef.current = timestamp;
+                    } else {
+                        setAnimationPhase('waiting');
+                    }
+                }
+            } else if (animationPhase === 'waiting') {
+                // Freeze on last frame until content is loaded
+                drawFrame(ctx, canvas, TOTAL_FRAMES - 1);
+
+                if (isContentLoaded) {
                     setAnimationPhase('fadeout');
                     fadeStartRef.current = timestamp;
                 }
@@ -188,17 +201,6 @@ function MojangLoader({ onComplete }) {
     return (
         <div className="mojang-loader">
             <canvas ref={canvasRef} className="mojang-canvas" />
-            {isLoading && (
-                <div className="mojang-loading-bar-container">
-                    <div className="mojang-loading-bar-border">
-                        <div
-                            className="mojang-loading-bar-fill"
-                            style={{ width: `${loadingProgress}%` }}
-                        />
-                    </div>
-                    <div className="mojang-loading-text">Loading... {loadingProgress}%</div>
-                </div>
-            )}
         </div>
     );
 }
