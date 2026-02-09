@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MojangLoader from './components/MojangLoader';
+import Hero from './components/Hero';
+import History from './components/History';
+import PlayerProfiles from './components/PlayerProfiles';
 import './App.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -121,7 +124,7 @@ function App() {
         trigger: containerRef.current,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 3, // Increased for smoother scrolling (was 1)
+        scrub: 5, // Increased for smoother scrolling (was 3)
       }
     });
 
@@ -159,6 +162,21 @@ function App() {
           ref={canvasRef}
           className="frame-canvas"
         />
+
+        {/* Dark Semi-Transparent Overlay */}
+        <div className="dark-overlay"></div>
+
+        {/* Content Layer - on top of everything */}
+        <div className="content-layer">
+          {/* Hero Section */}
+          <Hero />
+
+          {/* History Section */}
+          <History />
+
+          {/* Player Profiles */}
+          <PlayerProfiles />
+        </div>
 
         {/* Scroll Height Spacer - Increased for slower/smoother scrolling */}
         <div className="scroll-spacer"></div>

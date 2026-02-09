@@ -1,0 +1,298 @@
+/* ========================================
+   Admin Page Styles
+   ======================================== */
+.admin-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #fff;
+    padding: 2rem;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-header h1 {
+    font-size: 2rem;
+    color: #fbbf24;
+}
+
+.back-link {
+    color: #60a5fa;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #93c5fd;
+}
+
+/* Sections */
+.admin-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-section h2 {
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    color: #4ade80;
+}
+
+/* Add Player Form */
+.add-player-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 500px;
+}
+
+.add-player-form input,
+.add-player-form textarea {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    font-size: 1rem;
+}
+
+.add-player-form input:focus,
+.add-player-form textarea:focus {
+    outline: none;
+    border-color: #60a5fa;
+}
+
+.add-player-form textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.add-player-form button {
+    padding: 0.75rem 1.5rem;
+    background: #4ade80;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.add-player-form button:hover {
+    background: #22c55e;
+}
+
+/* Players Grid */
+.players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.admin-player-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-header h3 {
+    font-size: 1.3rem;
+    color: #fbbf24;
+    margin-bottom: 0.5rem;
+}
+
+.player-header p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.player-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.player-actions button {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.player-actions button:first-child {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.player-actions button:first-child:hover {
+    background: #2563eb;
+}
+
+.delete-btn {
+    background: #ef4444 !important;
+    color: #fff !important;
+}
+
+.delete-btn:hover {
+    background: #dc2626 !important;
+}
+
+/* Edit Form */
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.edit-form input,
+.edit-form textarea {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
+.edit-form textarea {
+    min-height: 60px;
+}
+
+.edit-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.edit-buttons button {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.edit-buttons button:first-child {
+    background: #4ade80;
+    color: #000;
+}
+
+.edit-buttons button:last-child {
+    background: #6b7280;
+    color: #fff;
+}
+
+/* Photos Section */
+.photos-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.photos-section h4 {
+    font-size: 0.9rem;
+    color: #60a5fa;
+    margin-bottom: 0.75rem;
+}
+
+.photos-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.photo-item {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.delete-photo-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.9);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.photo-item:hover .delete-photo-btn {
+    opacity: 1;
+}
+
+.upload-photo-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s;
+}
+
+.upload-photo-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.upload-photo-btn input {
+    display: none;
+}
+
+.empty-message {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-page {
+        padding: 1rem;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .players-grid {
+        grid-template-columns: 1fr;
+    }
+}
