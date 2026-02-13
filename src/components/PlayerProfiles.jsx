@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { decryptImage } from '../lib/encryption';
 
 function PlayerProfiles() {
     const [players, setPlayers] = useState([]);
@@ -24,7 +25,7 @@ function PlayerProfiles() {
             const playersWithPhotos = await Promise.all(
                 (playersData || []).map(async (player) => {
                     const { data: photos, error: photosError } = await supabase
-                        .from('player_photos')
+                        .from('secure_player_photos')
                         .select('*')
                         .eq('player_id', player.id)
                         .order('created_at', { ascending: true });
@@ -34,7 +35,20 @@ function PlayerProfiles() {
                         return { ...player, photos: [] };
                     }
 
-                    return { ...player, photos: photos || [] };
+                    // Decrypt photos
+                    const decryptedPhotos = (photos || []).map(photo => {
+                        try {
+                            const decryptedUrl = decryptImage(photo.encrypted_data, photo.iv);
+                            return {
+                                ...photo,
+                                photo_url: decryptedUrl
+                            };
+                        } catch (e) {
+                            return null;
+                        }
+                    }).filter(p => p !== null && p.photo_url);
+
+                    return { ...player, photos: decryptedPhotos };
                 })
             );
 

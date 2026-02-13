@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+import { fileToBase64, encryptImage, decryptImage } from '../lib/encryption';
 import './AdminPage.css';
 
 function AdminPage() {
@@ -28,15 +29,30 @@ function AdminPage() {
 
             if (error) throw error;
 
-            // Fetch photos for each player
+            // Fetch photos for each player from SECURE table
             const playersWithPhotos = await Promise.all(
                 (playersData || []).map(async (player) => {
                     const { data: photos } = await supabase
-                        .from('player_photos')
+                        .from('secure_player_photos')
                         .select('*')
                         .eq('player_id', player.id)
                         .order('created_at', { ascending: true });
-                    return { ...player, photos: photos || [] };
+
+                    // Decrypt photos
+                    const decryptedPhotos = (photos || []).map(photo => {
+                        try {
+                            const decryptedUrl = decryptImage(photo.encrypted_data, photo.iv);
+                            return {
+                                ...photo,
+                                photo_url: decryptedUrl // Add this virtual property for display
+                            };
+                        } catch (e) {
+                            console.error('Failed to decrypt photo', photo.id);
+                            return null;
+                        }
+                    }).filter(p => p !== null && p.photo_url);
+
+                    return { ...player, photos: decryptedPhotos };
                 })
             );
 
@@ -100,30 +116,20 @@ function AdminPage() {
 
         setUploading(true);
         try {
-            // Generate unique filename
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${playerId}/${Date.now()}.${fileExt}`;
+            // 1. Convert to Base64
+            const base64Data = await fileToBase64(file);
 
-            // Upload to Supabase Storage
-            const { error: uploadError } = await supabase.storage
-                .from('player-photos')
-                .upload(fileName, file);
+            // 2. Encrypt
+            const { encryptedData, iv } = encryptImage(base64Data);
 
-            if (uploadError) throw uploadError;
-
-            // Get public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('player-photos')
-                .getPublicUrl(fileName);
-
-            // Add photo record to database
+            // 3. Insert into SECURE table
             const { data: photoData, error: dbError } = await supabase
-                .from('player_photos')
+                .from('secure_player_photos')
                 .insert([
                     {
                         player_id: playerId,
-                        photo_url: publicUrl,
-                        is_primary: false
+                        encrypted_data: encryptedData,
+                        iv: iv
                     }
                 ])
                 .select()
@@ -131,10 +137,15 @@ function AdminPage() {
 
             if (dbError) throw dbError;
 
-            // Update local state
+            // 4. Update local state (add decrypted URL for display)
+            const newPhoto = {
+                ...photoData,
+                photo_url: base64Data // Use local base64 for immediate feedback
+            };
+
             setPlayers(players.map(p => {
                 if (p.id === playerId) {
-                    return { ...p, photos: [...p.photos, photoData] };
+                    return { ...p, photos: [...p.photos, newPhoto] };
                 }
                 return p;
             }));
@@ -147,25 +158,17 @@ function AdminPage() {
         }
     };
 
-    const deletePhoto = async (playerId, photoId, photoUrl) => {
+    const deletePhoto = async (playerId, photoId) => {
         if (!confirm('Delete this photo?')) return;
 
         try {
             // Delete from database
             const { error: dbError } = await supabase
-                .from('player_photos')
+                .from('secure_player_photos')
                 .delete()
                 .eq('id', photoId);
 
             if (dbError) throw dbError;
-
-            // Try to delete from storage (extract path from URL)
-            const urlParts = photoUrl.split('/player-photos/');
-            if (urlParts[1]) {
-                await supabase.storage
-                    .from('player-photos')
-                    .remove([urlParts[1]]);
-            }
 
             // Update local state
             setPlayers(players.map(p => {
