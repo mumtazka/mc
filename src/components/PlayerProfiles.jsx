@@ -62,8 +62,8 @@ function PlayerProfiles() {
 
     if (loading) {
         return (
-            <section className="players-section">
-                <h2 className="players-title">👥 Para Pemain</h2>
+            <section id="players" className="players-section">
+                <h2 className="players-title">Para Pemain</h2>
                 <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
                     Memuat data pemain...
                 </p>
@@ -73,7 +73,7 @@ function PlayerProfiles() {
 
     if (players.length === 0) {
         return (
-            <section className="players-section">
+            <section id="players" className="players-section">
                 <h2 className="players-title">👥 Para Pemain</h2>
                 <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.7)' }}>
                     Belum ada pemain terdaftar. Tambahkan melalui halaman admin.
@@ -83,7 +83,7 @@ function PlayerProfiles() {
     }
 
     return (
-        <section className="players-section">
+        <section id="players" className="players-section">
             <h2 className="players-title">👥 Para Pemain</h2>
 
             {players.map((player, index) => {

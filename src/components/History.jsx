@@ -1,7 +1,7 @@
 function History() {
     return (
-        <section className="history-section">
-            <h2 className="history-title">📜 Sejarah Server</h2>
+        <section id="history" className="history-section">
+            <h2 className="history-title">Sejarah Server</h2>
             <div className="history-content">
                 <p>
                     Server Minecraft TJKT 2 pertama kali didirikan dengan tujuan menyatukan

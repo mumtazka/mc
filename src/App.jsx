@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MojangLoader from './components/MojangLoader';
 import Hero from './components/Hero';
+
 import History from './components/History';
 import PlayerProfiles from './components/PlayerProfiles';
 import './App.css';
@@ -153,6 +154,7 @@ function App() {
 
   return (
     <div className="app">
+
       {/* Main Scroll Container */}
       <div
         ref={containerRef}

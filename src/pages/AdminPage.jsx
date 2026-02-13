@@ -215,13 +215,13 @@ function AdminPage() {
     return (
         <div className="admin-page">
             <header className="admin-header">
-                <h1>🎮 Admin Panel</h1>
+                <h1>Admin Panel</h1>
                 <Link to="/" className="back-link">← Back to Site</Link>
             </header>
 
             {/* Add New Player Form */}
             <section className="admin-section">
-                <h2>➕ Add New Player</h2>
+                <h2>Add New Player</h2>
                 <form onSubmit={addPlayer} className="add-player-form">
                     <input
                         type="text"
@@ -241,7 +241,7 @@ function AdminPage() {
 
             {/* Players List */}
             <section className="admin-section">
-                <h2>👥 Players ({players.length})</h2>
+                <h2>Players ({players.length})</h2>
 
                 {players.length === 0 ? (
                     <p className="empty-message">No players yet. Add one above!</p>

@@ -1,6 +1,6 @@
 function Hero() {
     return (
-        <section className="hero-section">
+        <section id="home" className="hero-section">
             <h1 className="hero-title">TJKT 2</h1>
             <h1 className="hero-title" style={{ fontSize: 'clamp(1.5rem, 5vw, 3rem)', marginTop: '-0.5rem' }}>
                 Minecraft Server
